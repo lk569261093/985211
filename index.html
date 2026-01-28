@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智学伴侣 - 中学生智能探究系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        
+        .feature-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(120deg, #4F6EF7 0%, #6AC3FF 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(79, 110, 247, 0.4);
+        }
+        
+        .info {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-align: left;
+        }
+        
+        .info h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .info code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .info pre {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .version {
+            margin-top: 20px;
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .author {
+            color: #666;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🎓</div>
+        <h1>智学伴侣</h1>
+        <p class="subtitle">中学生智能探究系统 - 让学习更高效、更有趣、更可追踪</p>
+        
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">💬</div>
+                <div>学习对话</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📖</div>
+                <div>学科导航</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🧰</div>
+                <div>学习工具箱</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">✍️</div>
+                <div>作文写作</div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <h3>🚀 快速开始</h3>
+            <p>这是一个 <strong>Streamlit</strong> 应用，需要在服务器上运行。</p>
+            
+            <h4>1. 安装依赖</h4>
+            <pre>pip install -r requirements.txt</pre>
+            
+            <h4>2. 在应用内设置 API</h4>
+            <pre>侧边栏 → API 设置 → 输入授权码完成验证</pre>
+            
+            <h4>3. 启动应用</h4>
+            <pre>streamlit run app.py</pre>
+        </div>
+        
+        <p class="version">版本 1.3.0</p>
+        <p class="author">作者：lk (569261093@qq.com; 15523182968)</p>
+    </div>
+</body>
+</html>

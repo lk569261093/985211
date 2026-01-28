@@ -1,0 +1,15 @@
+# 智学伴侣 - 中学生智能探究系统
+# 依赖包列表
+
+# Web应用框架
+streamlit>=1.28.0
+
+# OpenAI API客户端 (用于调用兼容 OpenAI 接口的服务)
+openai>=1.0.0
+
+# YAML配置解析
+PyYAML>=6.0
+
+# 可选：增强的Markdown渲染 (如需支持更复杂的LaTeX公式)
+# markdown>=3.5.0
+# pymdown-extensions>=10.0.0
