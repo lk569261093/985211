@@ -13,7 +13,12 @@ import streamlit as st
 import yaml
 from openai import OpenAI
 
-from security_utils import decrypt_api_key, get_machine_code
+from security_utils import decrypt_api_key
+
+try:
+    from streamlit_js_eval import streamlit_js_eval
+except Exception:
+    streamlit_js_eval = None
 
 # ---------------------------------------------------------
 # 1. 初始化与配置加载
@@ -220,6 +225,42 @@ def save_local_settings(settings):
         return False
 
 
+def get_client_code(allow_js=True):
+    """获取浏览器码（保存在浏览器本地）"""
+    cached = st.session_state.get("client_code")
+    if cached:
+        return cached
+    if allow_js and streamlit_js_eval:
+        js_code = """
+(() => {
+  const key = "ai_tutor_browser_id";
+  let val = localStorage.getItem(key);
+  if (!val) {
+    if (crypto && crypto.randomUUID) {
+      val = crypto.randomUUID();
+    } else {
+      const buf = new Uint8Array(16);
+      window.crypto.getRandomValues(buf);
+      buf[6] = (buf[6] & 0x0f) | 0x40;
+      buf[8] = (buf[8] & 0x3f) | 0x80;
+      const hex = [...buf].map(b => b.toString(16).padStart(2, "0")).join("");
+      val = `${hex.substr(0,8)}-${hex.substr(8,4)}-${hex.substr(12,4)}-${hex.substr(16,4)}-${hex.substr(20)}`;
+    }
+    localStorage.setItem(key, val);
+  }
+  return val;
+})()
+"""
+        value = streamlit_js_eval(js_expressions=js_code, key="ai_tutor_browser_id")
+        if value:
+            st.session_state.client_code = str(value)
+            runtime = st.session_state.get("api_runtime", {})
+            if runtime.get("api_token") and not runtime.get("api_key"):
+                st.session_state.api_runtime = build_runtime_api_config()
+            return st.session_state.client_code
+    return ""
+
+
 def clear_local_api_settings():
     """清除本地API设置"""
     try:
@@ -259,10 +300,10 @@ def build_runtime_api_config():
     api_cfg = CONFIG.get("api_settings", {})
     local_settings = load_local_settings()
     local_api = local_settings.get("api_settings", {}) if isinstance(local_settings, dict) else {}
-    machine_code = get_machine_code()
+    client_code = get_client_code(allow_js=False)
 
     token = str(local_api.get("api_token", "") or "").strip()
-    payload = decrypt_api_key(token, machine_code) if token else {}
+    payload = decrypt_api_key(token, client_code) if token and client_code else {}
     api_key = payload.get("api_key", "")
     payload_base_url = payload.get("base_url", "")
     payload_model = payload.get("model", "")
@@ -849,11 +890,12 @@ def render_api_settings():
     runtime = st.session_state.get("api_runtime", {})
     local_settings = load_local_settings()
     local_api = local_settings.get("api_settings", {}) if isinstance(local_settings, dict) else {}
-    machine_code = get_machine_code()
+    client_code = get_client_code()
 
     with st.expander("🔑 API 设置", expanded=not is_api_ready()):
-        st.text_input("本机机器码", value=machine_code, disabled=True)
-        st.caption("向开发者申请授权码时请提供此机器码。")
+        code_display = client_code or "浏览器码生成中，请稍后刷新页面"
+        st.text_input("浏览器码/设备码", value=code_display, disabled=True)
+        st.caption("向开发者申请授权码时请提供此浏览器码。")
         st.caption(f"开发者联系方式：{DEVELOPER_CONTACT}")
 
         if runtime.get("api_token") and not runtime.get("api_key"):
@@ -863,7 +905,7 @@ def render_api_settings():
         if runtime.get("expire_at") and not is_token_expired(runtime.get("expire_at")):
             st.caption(f"授权有效期至：{runtime.get('expire_at')}")
 
-        st.caption("向开发者获取授权码（需提供机器码）。")
+        st.caption("向开发者获取授权码（需提供浏览器码）。")
         token_default = local_api.get("api_token", "") if isinstance(local_api, dict) else ""
         api_token_input = st.text_input(
             "授权码",
@@ -879,14 +921,16 @@ def render_api_settings():
         if st.button("验证并应用授权码", key="apply_api_token", use_container_width=True):
             if not api_token_input:
                 st.error("请输入授权码。")
+            elif not client_code:
+                st.error("浏览器码尚未生成，请刷新页面后重试。")
             else:
-                payload = decrypt_api_key(api_token_input, machine_code)
+                payload = decrypt_api_key(api_token_input, client_code)
                 api_key = payload.get("api_key", "")
                 payload_base_url = payload.get("base_url", "")
                 payload_model = payload.get("model", "")
                 payload_expire_at = payload.get("expire_at", "")
                 if not api_key:
-                    st.error("授权码无效或机器码不匹配。")
+                    st.error("授权码无效或浏览器码不匹配。")
                 else:
                     resolved_base_url = payload_base_url or runtime.get("base_url") or api_cfg.get("base_url", "")
                     resolved_model = payload_model or runtime.get("model") or api_cfg.get("model", "")

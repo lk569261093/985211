@@ -7,6 +7,9 @@ streamlit>=1.28.0
 # OpenAI API客户端 (用于调用兼容 OpenAI 接口的服务)
 openai>=1.0.0
 
+# 前端JS辅助（用于生成浏览器码）
+streamlit-js-eval>=0.1.5
+
 # YAML配置解析
 PyYAML>=6.0
 
